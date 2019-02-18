@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/dtan4/terraforming.svg?branch=master)](https://travis-ci.org/dtan4/terraforming)
 [![Code Climate](https://codeclimate.com/github/dtan4/terraforming/badges/gpa.svg)](https://codeclimate.com/github/dtan4/terraforming)
 [![Coverage Status](https://coveralls.io/repos/github/dtan4/terraforming/badge.svg?branch=increase-test-cov-160528)](https://coveralls.io/github/dtan4/terraforming)
-[![Dependency Status](https://gemnasium.com/dtan4/terraforming.svg)](https://gemnasium.com/dtan4/terraforming)
 [![Gem Version](https://badge.fury.io/rb/terraforming.svg)](http://badge.fury.io/rb/terraforming)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 [![Docker Repository on Quay.io](https://quay.io/repository/dtan4/terraforming/status "Docker Repository on Quay.io")](https://quay.io/repository/dtan4/terraforming)
@@ -25,7 +24,9 @@ Export existing AWS resources to [Terraform](https://terraform.io/) style (tf, t
 
 ## Supported version
 
-Ruby 2.1 or higher
+- Ruby 2.1 or higher is required
+- Terraform v0.9.3 or higher is recommended
+  - Some resources (e.g. `iam_instance_profile`) uses newer resource specification
 
 ## Installation
 
@@ -63,6 +64,12 @@ aws_secret_access_key = FugaFuga
 
 # Pass profile name by --profile option
 $ terraforming s3 --profile hoge
+```
+
+You can assume a role by using the `--assume` option.
+
+```bash
+$ terraforming s3 --assume arn:aws:iam::123456789123:role/test-role
 ```
 
 You can force the AWS SDK to utilize the CA certificate that is bundled with the SDK for systems where the default OpenSSL certificate is not installed (e.g. Windows) by utilizing the `--use-bundled-cert` option.
@@ -348,6 +355,10 @@ terraforming help | grep terraforming | grep -v help | awk '{print "terraforming
 # find files that only have 1 empty line (likely nothing in AWS)
 find . -type f -name '*.tf' | xargs wc -l | grep ' 1 .'
 ```
+
+### Caveats
+
+- `terraforming kmsk` does not export EXTERNAL origin key, bacause Terraform does not support it.
 
 ## Run as Docker container [![Docker Repository on Quay.io](https://quay.io/repository/dtan4/terraforming/status "Docker Repository on Quay.io")](https://quay.io/repository/dtan4/terraforming)
 

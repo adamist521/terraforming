@@ -44,7 +44,13 @@ module Terraforming
             attributes["subdivision"] = record.geo_location.subdivision_code if record.geo_location.subdivision_code
           end
 
+          if record.failover
+            attributes["failover_routing_policy.#"] = "1"
+            attributes["failover_routing_policy.0.type"] = record.failover
+          end
+
           attributes["set_identifier"] = record.set_identifier if record.set_identifier
+          attributes["health_check_id"] = record.health_check_id if record.health_check_id
 
           resources["aws_route53_record.#{module_name_of(record, counter)}"] = {
             "type" => "aws_route53_record",
@@ -95,7 +101,7 @@ module Terraforming
       end
 
       def module_name_of(record, counter)
-        normalize_module_name(name_of(record.name) + "-" + record.type + (!counter.nil? ? "-" + counter.to_s : ""))
+        normalize_module_name(name_of(record.name.gsub(/\\052/, 'wildcard')) + "-" + record.type + (!counter.nil? ? "-" + counter.to_s : ""))
       end
 
       def zone_id_of(hosted_zone)
